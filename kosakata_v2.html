@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitsumi — Kotoba</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+:root{--navy:#12396b;--blue:#2f7ff0;--blue2:#4d8df5;--green:#20c878;--light:#eef6ff;--bg:#f7fbff;--muted:#91a0b3}
+body{background:var(--bg);color:var(--navy);min-height:100vh}
+.app{width:100%;max-width:620px;margin:auto;min-height:100vh;padding-bottom:105px}
+header{height:82px;background:#fff;display:flex;align-items:center;padding:0 24px;border-bottom:1px solid #edf1f6}
+.back{border:0;background:none;font-size:38px;line-height:1;color:var(--navy);cursor:pointer;margin-right:12px}
+.logo{font-size:38px;font-weight:800;letter-spacing:-2px}.pink{color:#e95775}
+main{padding:25px 28px}
+.screen-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.screen-title h1{font-size:30px}.counter{font-size:20px;color:#7187a1;font-weight:700}
+.progress-track{height:12px;background:#e4edf7;border-radius:20px;overflow:hidden;margin-bottom:22px}
+.progress-bar{height:100%;width:10%;background:var(--green);border-radius:20px;transition:width .25s}
+.word-card{background:#fff;border-radius:30px;padding:28px 25px 25px;text-align:center;box-shadow:0 9px 25px rgba(30,70,120,.08);min-height:555px;display:flex;flex-direction:column;align-items:center}
+.category{font-size:16px;font-weight:700;color:var(--blue);background:#e5f1ff;border-radius:22px;padding:9px 17px;margin-bottom:25px}
+.word-image{width:185px;height:185px;border-radius:28px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:120px;margin-bottom:18px;filter:drop-shadow(0 5px 7px rgba(0,0,0,.08))}
+.jp{font-size:58px;font-weight:500;line-height:1.1;margin-bottom:7px}
+.romaji{font-size:24px;color:#8191a5;margin-bottom:8px}
+.meaning{font-size:29px;font-weight:700;margin-bottom:24px}
+.audio-row{display:flex;justify-content:center;gap:20px;margin-top:auto}
+.circle{width:70px;height:70px;border:0;border-radius:50%;cursor:pointer;font-size:32px;display:flex;align-items:center;justify-content:center}
+.audio{background:var(--blue);color:white;box-shadow:0 7px 15px rgba(47,127,240,.22)}
+.star{background:#edf4fc;color:#56708e}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:22px}
+.action{height:66px;border:0;border-radius:23px;font-size:22px;font-weight:700;cursor:pointer}
+.prev{background:#eaf2fb;color:#526d8d}.next{background:var(--blue);color:white;box-shadow:0 9px 18px rgba(47,127,240,.22)}
+.action:disabled{opacity:.45;cursor:not-allowed}
+.day-screen h1{font-size:30px;margin-bottom:7px}.day-screen p{color:#7187a1;line-height:1.5;margin-bottom:22px}
+.days{display:flex;flex-direction:column;gap:13px}
+.day{width:100%;min-height:96px;border:0;background:#fff;border-radius:23px;padding:17px 20px;display:flex;align-items:center;text-align:left;color:var(--navy);box-shadow:0 7px 20px rgba(30,70,120,.07);cursor:pointer}
+.day.locked{opacity:.55;cursor:not-allowed}.day-icon{width:60px;height:60px;border-radius:19px;background:#e4f0ff;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;margin-right:15px;flex-shrink:0}
+.day.done .day-icon{background:#ddfaed;color:#16a967}.day-info{flex:1}.day-title{font-size:22px;font-weight:800}.day-sub{font-size:14px;color:#91a0b3;margin-top:4px}.status{font-size:24px}
+.hidden{display:none!important}
+.bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(620px,100%);height:78px;background:rgba(255,255,255,.98);border-top:1px solid #edf0f5;display:grid;grid-template-columns:repeat(3,1fr);z-index:100;box-shadow:0 -7px 20px rgba(20,50,90,.06)}
+.nav-item{text-decoration:none;color:#a1acba;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;font-weight:600}.nav-icon{font-size:29px}.nav-active{color:var(--blue)}
+.finish{position:fixed;inset:0;background:rgba(18,57,107,.35);display:flex;align-items:center;justify-content:center;padding:25px;z-index:200}
+.finish-box{background:#fff;border-radius:30px;padding:32px 25px;text-align:center;width:100%;max-width:420px;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.finish-box .big{font-size:65px;margin-bottom:10px}.finish-box h2{font-size:29px;margin-bottom:8px}.finish-box p{color:#7187a1;line-height:1.5}.finish-btn{width:100%;height:58px;border:0;border-radius:20px;background:var(--blue);color:#fff;font-size:20px;font-weight:700;margin-top:20px}
+@media(max-width:500px){main{padding:22px 20px}.word-card{padding:24px 16px;min-height:520px}.word-image{width:160px;height:160px;font-size:100px}.jp{font-size:52px}.meaning{font-size:26px}.action{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<button class="back" onclick="goBack()" aria-label="Kembali">‹</button>
+<div class="logo">Kits<span class="pink">u</span>mi</div>
+</header>
+
+<main>
+<section id="dayScreen" class="day-screen">
+<h1>📖 Kotoba</h1>
+<p>Belajar 10 kosakata setiap hari. Selesaikan satu Day untuk membuka Day berikutnya.</p>
+<div class="days" id="dayList"></div>
+</section>
+
+<section id="learnScreen" class="hidden">
+<div class="screen-title"><h1 id="dayTitle">Day 1</h1><span class="counter" id="counter">1/10</span></div>
+<div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="word-card">
+<div class="category">KOSAKATA</div>
+<div class="word-image" id="wordImage">💧</div>
+<div class="jp" id="jp">水</div>
+<div class="romaji" id="romaji">mizu</div>
+<div class="meaning" id="meaning">air</div>
+
+<div class="audio-row">
+<button class="circle audio" onclick="speakWord()" aria-label="Dengarkan">🔊</button>
+<button class="circle star" id="favoriteBtn" onclick="toggleFavorite()" aria-label="Favorit">☆</button>
+</div>
+</div>
+
+<div class="actions">
+<button class="action prev" id="prevBtn" onclick="previousWord()">← Sebelumnya</button>
+<button class="action next" id="nextBtn" onclick="nextWord()">Selanjutnya →</button>
+</div>
+</section>
+</main>
+
+<nav class="bottom-nav">
+<a href="index.html" class="nav-item"><span class="nav-icon">🏠</span><span>Beranda</span></a>
+<a href="kosakata.html" class="nav-item nav-active"><span class="nav-icon">📖</span><span>Materi</span></a>
+<a href="profil.html" class="nav-item"><span class="nav-icon">♙</span><span>Profil</span></a>
+</nav>
+</div>
+
+<div id="finishModal" class="finish hidden">
+<div class="finish-box">
+<div class="big">🎉</div>
+<h2 id="finishTitle">Day 1 selesai!</h2>
+<p>Kamu sudah menyelesaikan 10 kosakata hari ini.<br><b>+20 XP</b> sudah ditambahkan.</p>
+<button class="finish-btn" onclick="closeFinish()">Lanjut</button>
+</div>
+</div>
+
+<script>
+const days=[
+[
+["水","mizu","air","💧"],["人","hito","orang","👤"],["山","yama","gunung","⛰️"],["川","kawa","sungai","🌊"],["木","ki","pohon","🌳"],
+["空","sora","langit","☁️"],["雨","ame","hujan","🌧️"],["花","hana","bunga","🌸"],["口","kuchi","mulut","👄"],["目","me","mata","👁️"]
+],
+[
+["家","ie","rumah","🏠"],["学校","gakkou","sekolah","🏫"],["駅","eki","stasiun","🚉"],["店","mise","toko","🏪"],["病院","byouin","rumah sakit","🏥"],
+["会社","kaisha","perusahaan","🏢"],["電話","denwa","telepon","📞"],["本","hon","buku","📖"],["名前","namae","nama","🏷️"],["先生","sensei","guru","👨‍🏫"]
+],
+[
+["右","migi","kanan","➡️"],["左","hidari","kiri","⬅️"],["上","ue","atas","⬆️"],["下","shita","bawah","⬇️"],["中","naka","dalam","📦"],
+["前","mae","depan","🔜"],["後ろ","ushiro","belakang","🔙"],["大きい","ookii","besar","🐘"],["小さい","chiisai","kecil","🐭"],["新しい","atarashii","baru","✨"]
+],
+[
+["古い","furui","lama","📜"],["安い","yasui","murah","💰"],["高い","takai","mahal/tinggi","📈"],["長い","nagai","panjang","📏"],["白い","shiroi","putih","⚪"],
+["黒い","kuroi","hitam","⚫"],["赤い","akai","merah","🔴"],["青い","aoi","biru","🔵"],["手","te","tangan","✋"],["足","ashi","kaki","🦶"]
+],
+[
+["食べます","tabemasu","makan","🍚"],["飲みます","nomimasu","minum","🥤"],["行きます","ikimasu","pergi","🚶"],["来ます","kimasu","datang","👋"],["帰ります","kaerimasu","pulang","🏡"],
+["買います","kaimasu","membeli","🛍️"],["読みます","yomimasu","membaca","📚"],["書きます","kakimasu","menulis","✍️"],["話します","hanashimasu","berbicara","💬"],["働きます","hatarakimasu","bekerja","💼"]
+]
+];
+
+let currentDay=0,currentWord=0;
+
+function done(i){return localStorage.getItem("kitsumiKotobaDay"+(i+1))==="done"}
+function unlocked(i){return i===0||done(i-1)}
+
+function renderDays(){
+ const list=document.getElementById("dayList"); list.innerHTML="";
+ days.forEach((w,i)=>{
+  const b=document.createElement("button");
+  b.className="day"+(done(i)?" done":"")+(!unlocked(i)?" locked":"");
+  b.disabled=!unlocked(i);
+  b.innerHTML=`<div class="day-icon">${done(i)?"✓":"DAY "+(i+1)}</div><div class="day-info"><div class="day-title">Day ${i+1}</div><div class="day-sub">${done(i)?"Selesai • 10/10 kosakata":"10 kosakata baru"}</div></div><div class="status">${done(i)?"⭐":unlocked(i)?"›":"🔒"}</div>`;
+  if(unlocked(i)) b.onclick=()=>startDay(i);
+  list.appendChild(b);
+ });
+}
+
+function startDay(i){
+ currentDay=i;currentWord=0;
+ document.getElementById("dayScreen").classList.add("hidden");
+ document.getElementById("learnScreen").classList.remove("hidden");
+ showWord();
+}
+
+function showWord(){
+ const w=days[currentDay][currentWord];
+ document.getElementById("dayTitle").textContent="Day "+(currentDay+1);
+ document.getElementById("counter").textContent=(currentWord+1)+"/10";
+ document.getElementById("progressBar").style.width=((currentWord+1)*10)+"%";
+ document.getElementById("wordImage").textContent=w[3];
+ document.getElementById("jp").textContent=w[0];
+ document.getElementById("romaji").textContent=w[1];
+ document.getElementById("meaning").textContent=w[2];
+ document.getElementById("prevBtn").disabled=currentWord===0;
+ document.getElementById("nextBtn").textContent=currentWord===9?"Selesai ✓":"Selanjutnya →";
+ updateFavorite();
+}
+
+function nextWord(){
+ if(currentWord<9){currentWord++;showWord();return}
+ localStorage.setItem("kitsumiKotobaDay"+(currentDay+1),"done");
+ const xp=Number(localStorage.getItem("kitsumiXP")||120);
+ localStorage.setItem("kitsumiXP",String(xp+20));
+ document.getElementById("finishTitle").textContent="Day "+(currentDay+1)+" selesai!";
+ document.getElementById("finishModal").classList.remove("hidden");
+}
+function previousWord(){if(currentWord>0){currentWord--;showWord()}}
+function closeFinish(){
+ document.getElementById("finishModal").classList.add("hidden");
+ document.getElementById("learnScreen").classList.add("hidden");
+ document.getElementById("dayScreen").classList.remove("hidden");
+ renderDays();
+}
+function goBack(){
+ if(!document.getElementById("learnScreen").classList.contains("hidden")){
+  document.getElementById("learnScreen").classList.add("hidden");
+  document.getElementById("dayScreen").classList.remove("hidden");
+  renderDays();
+ }else history.back();
+}
+function speakWord(){
+ const text=days[currentDay][currentWord][1];
+ if("speechSynthesis" in window){
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="ja-JP";u.rate=.8;speechSynthesis.speak(u);
+ }
+}
+function favoriteKey(){return "kitsumiFav_"+currentDay+"_"+currentWord}
+function toggleFavorite(){
+ localStorage.setItem(favoriteKey(),localStorage.getItem(favoriteKey())==="1"?"0":"1");
+ updateFavorite();
+}
+function updateFavorite(){document.getElementById("favoriteBtn").textContent=localStorage.getItem(favoriteKey())==="1"?"★":"☆"}
+
+renderDays();
+</script>
+</body>
+</html>
