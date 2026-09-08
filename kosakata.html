@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitsumi — Kotoba</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+:root{
+  --navy:#12396b;--blue:#2f7ff0;--blue-light:#eef6ff;
+  --muted:#91a0b3;--green:#16b86a;--yellow:#ffd52f;--bg:#f8fbff;
+}
+body{background:var(--bg);color:var(--navy);min-height:100vh}
+.app{width:100%;max-width:620px;margin:auto;min-height:100vh;padding-bottom:100px}
+header{
+  height:80px;background:white;display:flex;align-items:center;
+  padding:0 24px;border-bottom:1px solid #edf0f5
+}
+.back{
+  border:0;background:transparent;font-size:30px;color:var(--navy);
+  cursor:pointer;margin-right:14px
+}
+.logo{font-size:38px;font-weight:800;letter-spacing:-2px}
+.logo .pink{color:#e95775}
+main{padding:20px 24px 30px}
+.hero{
+  background:linear-gradient(105deg,#f3f9ff,#e9f4ff);
+  border-radius:27px;padding:24px;margin-bottom:22px
+}
+.hero h1{font-size:31px;margin-bottom:7px}
+.hero p{font-size:18px;color:#7289a4;line-height:1.4}
+.days{display:flex;flex-direction:column;gap:13px}
+.day{
+  width:100%;border:0;background:white;border-radius:23px;
+  min-height:100px;padding:18px 20px;display:flex;align-items:center;
+  text-align:left;color:var(--navy);box-shadow:0 7px 20px rgba(30,70,120,.07);
+  cursor:pointer;transition:.15s
+}
+.day:active{transform:scale(.98)}
+.day.locked{opacity:.58;cursor:not-allowed}
+.day-icon{
+  width:62px;height:62px;border-radius:19px;background:#e4f0ff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:29px;font-weight:800;margin-right:15px;flex-shrink:0
+}
+.day.done .day-icon{background:#ddfaed}
+.day-info{flex:1}
+.day-title{font-size:23px;font-weight:800;margin-bottom:4px}
+.day-sub{font-size:15px;color:#91a0b3}
+.day-status{font-size:25px}
+.progress-wrap{
+  height:7px;background:#e9eef5;border-radius:10px;margin-top:9px;overflow:hidden
+}
+.progress{
+  height:100%;width:0;background:var(--blue);border-radius:10px;transition:.2s
+}
+.section{font-size:27px;font-weight:800;margin:25px 0 14px}
+.learn-card{
+  background:white;border-radius:27px;padding:26px 20px;
+  box-shadow:0 8px 22px rgba(30,70,120,.07);text-align:center
+}
+.badge{
+  display:inline-block;background:#e4f0ff;color:var(--blue);
+  padding:7px 14px;border-radius:20px;font-weight:700;margin-bottom:18px
+}
+.jp{font-size:52px;font-weight:800;margin:8px 0}
+.romaji{font-size:22px;color:#7187a1;margin-bottom:7px}
+.meaning{font-size:25px;font-weight:700}
+.example{margin-top:15px;color:#91a0b3;font-size:15px}
+.action{
+  width:100%;height:58px;border:0;border-radius:20px;background:var(--blue);
+  color:white;font-size:20px;font-weight:700;margin-top:22px;cursor:pointer
+}
+.secondary{
+  background:#eef6ff;color:var(--blue)
+}
+.hidden{display:none}
+.lesson-top{
+  display:flex;justify-content:space-between;align-items:center;margin-bottom:14px
+}
+.lesson-top h2{font-size:25px}
+.counter{color:#7187a1;font-weight:700}
+.notice{
+  margin-top:14px;padding:13px;border-radius:17px;background:#fff8d9;
+  color:#765d00;font-size:14px;line-height:1.4
+}
+.bottom-nav{
+  position:fixed;left:50%;bottom:0;transform:translateX(-50%);
+  width:min(620px,100%);height:76px;background:rgba(255,255,255,.98);
+  border-top:1px solid #edf0f5;display:grid;grid-template-columns:repeat(3,1fr);
+  z-index:100;box-shadow:0 -7px 20px rgba(20,50,90,.06)
+}
+.nav-item{
+  text-decoration:none;color:#a1acba;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;font-size:14px;font-weight:600
+}
+.nav-icon{font-size:29px;line-height:1}.nav-active{color:var(--blue)}
+@media(max-width:500px){
+  main{padding:18px 20px 25px}
+  .hero h1{font-size:28px}.day-title{font-size:21px}
+  .jp{font-size:46px}.meaning{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <button class="back" onclick="history.back()" aria-label="Kembali">‹</button>
+  <div class="logo">Kits<span class="pink">u</span>mi</div>
+</header>
+
+<main>
+  <section id="dayScreen">
+    <div class="hero">
+      <h1>📖 Kotoba</h1>
+      <p>Belajar sedikit demi sedikit. Selesaikan satu Day untuk membuka Day berikutnya.</p>
+    </div>
+
+    <h2 class="section">Pilih Day</h2>
+    <div class="days" id="dayList"></div>
+  </section>
+
+  <section id="lessonScreen" class="hidden">
+    <div class="lesson-top">
+      <h2 id="lessonTitle">Day 1</h2>
+      <div class="counter" id="counter">1 / 10</div>
+    </div>
+
+    <div class="learn-card">
+      <div class="badge">KOSAKATA</div>
+      <div class="jp" id="jp">水</div>
+      <div class="romaji" id="romaji">mizu</div>
+      <div class="meaning" id="meaning">air</div>
+      <div class="example" id="example">Contoh: 水をのみます。</div>
+
+      <button class="action" onclick="nextWord()">Saya Hafal ✓</button>
+      <button class="action secondary" onclick="showMeaning()">Sembunyikan Arti</button>
+    </div>
+
+    <div class="notice">
+      Setelah 10 kata selesai, Day ini ditandai selesai dan Day berikutnya terbuka.
+    </div>
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <span class="nav-icon">🏠</span><span>Beranda</span>
+  </a>
+  <a href="kosakata.html" class="nav-item nav-active">
+    <span class="nav-icon">📖</span><span>Materi</span>
+  </a>
+  <a href="profil.html" class="nav-item">
+    <span class="nav-icon">♙</span><span>Profil</span>
+  </a>
+</nav>
+
+</div>
+
+<script>
+const days = [
+  [
+    ["水","mizu","air","水をのみます。"],
+    ["人","hito","orang","あの人は先生です。"],
+    ["山","yama","gunung","山へいきます。"],
+    ["川","kawa","sungai","川があります。"],
+    ["木","ki","pohon","木があります。"],
+    ["空","sora","langit","空がきれいです。"],
+    ["雨","ame","hujan","雨がふります。"],
+    ["花","hana","bunga","花がきれいです。"],
+    ["口","kuchi","mulut","口をあけます。"],
+    ["目","me","mata","目をみます。"]
+  ],
+  [
+    ["家","ie","rumah","家にかえります。"],
+    ["学校","gakkou","sekolah","学校へいきます。"],
+    ["駅","eki","stasiun","駅へいきます。"],
+    ["店","mise","toko","店でかいます。"],
+    ["病院","byouin","rumah sakit","病院へいきます。"],
+    ["会社","kaisha","perusahaan","会社へいきます。"],
+    ["電話","denwa","telepon","電話をします。"],
+    ["本","hon","buku","本をよみます。"],
+    ["名前","namae","nama","名前を書きます。"],
+    ["先生","sensei","guru","先生です。"]
+  ],
+  [
+    ["右","migi","kanan","右をみます。"],
+    ["左","hidari","kiri","左をみます。"],
+    ["上","ue","atas","上をみます。"],
+    ["下","shita","bawah","下をみます。"],
+    ["中","naka","dalam","中にあります。"],
+    ["前","mae","depan","前にあります。"],
+    ["後ろ","ushiro","belakang","後ろをみます。"],
+    ["大きい","ookii","besar","大きいです。"],
+    ["小さい","chiisai","kecil","小さいです。"],
+    ["新しい","atarashii","baru","新しい本です。"]
+  ],
+  [
+    ["古い","furui","lama/tua","古い本です。"],
+    ["安い","yasui","murah","これは安いです。"],
+    ["高い","takai","mahal/tinggi","これは高いです。"],
+    ["長い","nagai","panjang","長いです。"],
+    ["白い","shiroi","putih","白いです。"],
+    ["黒い","kuroi","hitam","黒いです。"],
+    ["赤い","akai","merah","赤いです。"],
+    ["青い","aoi","biru","青いです。"],
+    ["手","te","tangan","手をあらいます。"],
+    ["足","ashi","kaki","足です。"]
+  ],
+  [
+    ["食べます","tabemasu","makan","ごはんを食べます。"],
+    ["飲みます","nomimasu","minum","水を飲みます。"],
+    ["行きます","ikimasu","pergi","学校へ行きます。"],
+    ["来ます","kimasu","datang","友だちが来ます。"],
+    ["帰ります","kaerimasu","pulang","家へ帰ります。"],
+    ["買います","kaimasu","membeli","本を買います。"],
+    ["読みます","yomimasu","membaca","本を読みます。"],
+    ["書きます","kakimasu","menulis","名前を書きます。"],
+    ["話します","hanashimasu","berbicara","日本語を話します。"],
+    ["働きます","hatarakimasu","bekerja","会社で働きます。"]
+  ]
+];
+
+let currentDay = 0;
+let currentWord = 0;
+let meaningVisible = true;
+
+function isDone(day){
+  return localStorage.getItem("kitsumiKotobaDay" + (day + 1)) === "done";
+}
+
+function renderDays(){
+  const list = document.getElementById("dayList");
+  list.innerHTML = "";
+
+  days.forEach((words,i)=>{
+    const unlocked = i === 0 || isDone(i-1);
+    const done = isDone(i);
+
+    const button = document.createElement("button");
+    button.className = "day" + (done ? " done" : "") + (!unlocked ? " locked" : "");
+    button.disabled = !unlocked;
+
+    button.innerHTML = `
+      <div class="day-icon">${done ? "✓" : "D" + (i+1)}</div>
+      <div class="day-info">
+        <div class="day-title">Day ${i+1}</div>
+        <div class="day-sub">${done ? "Selesai • 10/10 kosakata" : "10 kosakata baru"}</div>
+        <div class="progress-wrap">
+          <div class="progress" style="width:${done ? 100 : 0}%"></div>
+        </div>
+      </div>
+      <div class="day-status">${done ? "⭐" : (unlocked ? "›" : "🔒")}</div>
+    `;
+
+    if(unlocked) button.onclick = ()=>startDay(i);
+    list.appendChild(button);
+  });
+}
+
+function startDay(i){
+  currentDay = i;
+  currentWord = 0;
+  meaningVisible = true;
+  document.getElementById("dayScreen").classList.add("hidden");
+  document.getElementById("lessonScreen").classList.remove("hidden");
+  showWord();
+}
+
+function showWord(){
+  const word = days[currentDay][currentWord];
+  document.getElementById("lessonTitle").textContent = "Day " + (currentDay+1);
+  document.getElementById("counter").textContent = (currentWord+1) + " / 10";
+  document.getElementById("jp").textContent = word[0];
+  document.getElementById("romaji").textContent = word[1];
+  document.getElementById("meaning").textContent = word[2];
+  document.getElementById("example").textContent = "Contoh: " + word[3];
+  document.querySelector(".secondary").textContent = "Sembunyikan Arti";
+  meaningVisible = true;
+}
+
+function showMeaning(){
+  meaningVisible = !meaningVisible;
+  document.getElementById("meaning").style.visibility = meaningVisible ? "visible" : "hidden";
+  document.getElementById("romaji").style.visibility = meaningVisible ? "visible" : "hidden";
+  document.querySelector(".secondary").textContent =
+    meaningVisible ? "Sembunyikan Arti" : "Tampilkan Arti";
+}
+
+function nextWord(){
+  if(currentWord < 9){
+    currentWord++;
+    showWord();
+    return;
+  }
+
+  localStorage.setItem("kitsumiKotobaDay" + (currentDay+1), "done");
+
+  const oldXP = Number(localStorage.getItem("kitsumiXP") || 120);
+  localStorage.setItem("kitsumiXP", String(oldXP + 20));
+
+  alert("🎉 Day " + (currentDay+1) + " selesai! +20 XP");
+  document.getElementById("lessonScreen").classList.add("hidden");
+  document.getElementById("dayScreen").classList.remove("hidden");
+  renderDays();
+}
+
+renderDays();
+</script>
+</body>
+</html>
