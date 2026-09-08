@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kitsumi — Kanji Harian</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}
+:root{--navy:#12396b;--blue:#2f7ff0;--blue-light:#eef6ff;--muted:#91a0b3;--green:#16b86a;--yellow:#ffd52f;--bg:#f8fbff}
+body{background:var(--bg);color:var(--navy);min-height:100vh}
+.app{max-width:620px;margin:auto;min-height:100vh;padding-bottom:105px}
+header{height:82px;background:#fff;display:flex;align-items:center;gap:15px;padding:0 22px;position:sticky;top:0;z-index:10;box-shadow:0 2px 12px rgba(20,50,90,.05)}
+.back{border:0;background:transparent;font-size:34px;color:var(--navy);cursor:pointer}
+.logo{font-size:38px;font-weight:800;letter-spacing:-2px}.logo .pink{color:#e95775}
+.header-spacer{flex:1}.xp-mini{font-size:18px;font-weight:700}
+main{padding:20px 22px}
+.hero{background:linear-gradient(105deg,#f3f9ff,#e9f4ff);border-radius:27px;padding:20px;margin-bottom:16px}
+.hero-top{display:flex;align-items:center;justify-content:space-between}
+.eyebrow{color:#7187a1;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+h1{font-size:31px;margin-top:4px}.fox{font-size:60px}
+.progress-wrap{margin-top:14px}.progress-line{height:10px;background:#dbe8f7;border-radius:20px;overflow:hidden}
+.progress-bar{height:100%;width:0;background:var(--blue);border-radius:20px;transition:width .3s}
+.progress-text{display:flex;justify-content:space-between;margin-top:7px;color:#7187a1;font-size:14px}
+.card{background:#fff;border-radius:27px;padding:22px;box-shadow:0 8px 22px rgba(30,70,120,.07);margin-bottom:16px}
+.badge{display:inline-flex;padding:7px 12px;border-radius:99px;background:#e4f0ff;color:var(--blue);font-weight:700;font-size:14px}
+.kanji-stage{text-align:center;padding:12px 0 4px}
+.kanji-title{font-size:112px;line-height:1.05;font-weight:500;margin:2px 0}
+.reading{font-size:22px;font-weight:700}.meaning{font-size:18px;color:#7187a1;margin-top:5px}
+.example{margin-top:16px;background:#f7fbff;border-radius:18px;padding:14px;text-align:left}
+.example-label{font-size:13px;color:#91a0b3;font-weight:700;margin-bottom:5px}.example-text{font-size:18px}
+.stroke-box{margin-top:17px;border:2px solid #e4edf7;border-radius:21px;padding:13px}
+.stroke-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.stroke-head strong{font-size:17px}.small-btn{border:0;background:#eef6ff;color:var(--blue);padding:8px 11px;border-radius:12px;font-weight:700;cursor:pointer}
+#strokeSvg{width:190px;height:190px;display:block;margin:auto}
+.stroke-path{fill:none;stroke:var(--navy);stroke-width:7;stroke-linecap:round;stroke-linejoin:round}
+.stroke-fade{opacity:.14}
+.tip{font-size:13px;color:#91a0b3;text-align:center;margin-top:6px}
+.practice-title{font-size:21px;margin-bottom:10px}
+.canvas-wrap{background:#fbfdff;border:2px dashed #cbd9e8;border-radius:20px;padding:8px}
+#canvas{width:100%;height:245px;display:block;touch-action:none;border-radius:14px;background-image:linear-gradient(#e7eef7 1px,transparent 1px),linear-gradient(90deg,#e7eef7 1px,transparent 1px);background-size:25% 25%}
+.practice-actions{display:grid;grid-template-columns:1fr 1.6fr;gap:10px;margin-top:11px}
+.clear-btn,.done-btn{height:52px;border:0;border-radius:17px;font-size:17px;font-weight:700;cursor:pointer}
+.clear-btn{background:#eef3f8;color:#61758e}.done-btn{background:var(--blue);color:#fff;box-shadow:0 8px 18px rgba(47,127,240,.22)}
+.done-btn:disabled{opacity:.45;box-shadow:none}
+.status{text-align:center;min-height:22px;margin-top:10px;color:#7187a1;font-size:14px}
+.day-complete{display:none;text-align:center;background:#fff;border-radius:27px;padding:30px 20px;box-shadow:0 8px 22px rgba(30,70,120,.07)}
+.day-complete .big{font-size:62px}.day-complete h2{font-size:28px;margin:8px 0}.day-complete p{color:#7187a1;font-size:17px;line-height:1.4}
+.reward{margin:18px auto 0;background:#fff8d8;border-radius:18px;padding:13px;font-weight:800;color:#9a7900}
+.bottom-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(620px,100%);height:76px;background:rgba(255,255,255,.98);border-top:1px solid #edf0f5;display:grid;grid-template-columns:repeat(3,1fr);z-index:20;box-shadow:0 -7px 20px rgba(20,50,90,.06)}
+.nav-item{text-decoration:none;color:#a1acba;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:14px;font-weight:600}.nav-icon{font-size:29px;line-height:1}.nav-active{color:var(--blue)}
+@media(max-width:500px){main{padding:17px 16px}.logo{font-size:34px}.kanji-title{font-size:96px}.card{padding:18px}.fox{font-size:52px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<button class="back" onclick="history.back()" aria-label="Kembali">‹</button>
+<div class="logo">Kits<span class="pink">u</span>mi</div>
+<div class="header-spacer"></div>
+<div class="xp-mini">⭐ <span id="xpMini">0</span></div>
+</header>
+
+<main>
+<section class="hero">
+<div class="hero-top">
+<div><div class="eyebrow">LATIHAN KANJI</div><h1 id="dayTitle">Hari 1 / 24</h1></div>
+<div class="fox">🦊</div>
+</div>
+<div class="progress-wrap">
+<div class="progress-line"><div class="progress-bar" id="progressBar"></div></div>
+<div class="progress-text"><span id="progressText">0 / 5 hari ini</span><span id="overallText">0 / 120 total</span></div>
+</div>
+</section>
+
+<div class="card" style="padding:14px 18px;margin-bottom:16px;background:#fff;">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+    <strong style="font-size:16px;">📚 Kurikulum 120 Kanji</strong>
+    <span style="font-size:14px;color:#7187a1;">24 hari × 5 kanji</span>
+  </div>
+  <div style="font-size:13px;color:#91a0b3;margin-top:5px;">
+    Setiap hari mendapat 5 kanji berbeda. Hari berikutnya otomatis lanjut ke 5 kanji berikutnya.
+  </div>
+</div>
+
+<div id="lessonCard" class="card">
+<span class="badge" id="kanjiNumber">Kanji 1 dari 120</span>
+<div class="kanji-stage">
+<div class="kanji-title" id="kanji">一</div>
+<div class="reading" id="reading">いち</div>
+<div class="meaning" id="meaning">satu</div>
+<div class="example">
+<div class="example-label">CONTOH</div>
+<div class="example-text" id="example">一つ（ひとつ）— satu buah</div>
+</div>
+</div>
+
+<div class="stroke-box">
+<div class="stroke-head"><strong>✍️ Contoh goresan</strong><button class="small-btn" onclick="animateStrokes()">↻ Ulangi</button></div>
+<svg id="strokeSvg" viewBox="0 0 200 200" aria-label="Animasi urutan goresan"></svg>
+<div class="tip">Perhatikan gerakan Kitsu, lalu coba tulis sendiri.</div>
+</div>
+
+<div style="margin-top:20px">
+<div class="practice-title">Sekarang coba tulis kanji ini</div>
+<div class="canvas-wrap"><canvas id="canvas"></canvas></div>
+<div class="practice-actions">
+<button class="clear-btn" onclick="clearCanvas()">Hapus</button>
+<button class="done-btn" id="doneBtn" onclick="completeKanji()" disabled>✓ Selesai Kanji</button>
+</div>
+<div class="status" id="status"></div>
+</div>
+</div>
+
+<div class="day-complete" id="dayComplete">
+<div class="big">🎉</div>
+<h2>5 Kanji selesai!</h2>
+<p>Hebat! Target kanji hari ini sudah selesai.<br>Streak dan XP Kitsumi sudah bertambah.</p>
+<div class="reward">🔥 Streak +1 &nbsp; • &nbsp; ⭐ +50 XP</div>
+</div>
+</main>
+
+<nav class="bottom-nav">
+<a href="index.html" class="nav-item"><span class="nav-icon">🏠</span><span>Beranda</span></a>
+<a href="materi.html" class="nav-item nav-active"><span class="nav-icon">📖</span><span>Kanji</span></a>
+<a href="profil.html" class="nav-item"><span class="nav-icon">♙</span><span>Profil</span></a>
+</nav>
+</div>
+
+<script>
+const KANJI = [{"kanji": "一", "reading": "いち / ひとつ", "meaning": "satu", "example": "一つ（ひとつ）— satu buah"}, {"kanji": "二", "reading": "に / ふたつ", "meaning": "dua", "example": "二つ（ふたつ）— dua buah"}, {"kanji": "三", "reading": "さん / みっつ", "meaning": "tiga", "example": "三つ（みっつ）— tiga buah"}, {"kanji": "四", "reading": "よん / し", "meaning": "empat", "example": "四つ（よっつ）— empat buah"}, {"kanji": "五", "reading": "ご / いつつ", "meaning": "lima", "example": "五つ（いつつ）— lima buah"}, {"kanji": "六", "reading": "ろく / むっつ", "meaning": "enam", "example": "六つ（むっつ）— enam buah"}, {"kanji": "七", "reading": "なな / しち", "meaning": "tujuh", "example": "七つ（ななつ）— tujuh buah"}, {"kanji": "八", "reading": "はち / やっつ", "meaning": "delapan", "example": "八つ（やっつ）— delapan buah"}, {"kanji": "九", "reading": "きゅう / ここのつ", "meaning": "sembilan", "example": "九つ（ここのつ）— sembilan buah"}, {"kanji": "十", "reading": "じゅう / とお", "meaning": "sepuluh", "example": "十日（とおか）— tanggal 10"}, {"kanji": "百", "reading": "ひゃく", "meaning": "seratus", "example": "百円（ひゃくえん）— 100 yen"}, {"kanji": "千", "reading": "せん", "meaning": "seribu", "example": "千円（せんえん）— 1000 yen"}, {"kanji": "万", "reading": "まん", "meaning": "sepuluh ribu", "example": "一万円（いちまんえん）— 10.000 yen"}, {"kanji": "円", "reading": "えん", "meaning": "yen / lingkaran", "example": "百円（ひゃくえん）— 100 yen"}, {"kanji": "日", "reading": "ひ / にち / じつ", "meaning": "hari / matahari", "example": "日曜日（にちようび）— Minggu"}, {"kanji": "月", "reading": "つき / げつ / がつ", "meaning": "bulan", "example": "月曜日（げつようび）— Senin"}, {"kanji": "火", "reading": "ひ / か", "meaning": "api", "example": "火曜日（かようび）— Selasa"}, {"kanji": "水", "reading": "みず / すい", "meaning": "air", "example": "水（みず）— air"}, {"kanji": "木", "reading": "き / もく", "meaning": "pohon", "example": "木曜日（もくようび）— Kamis"}, {"kanji": "金", "reading": "かね / きん", "meaning": "emas / uang", "example": "金曜日（きんようび）— Jumat"}, {"kanji": "土", "reading": "つち / ど", "meaning": "tanah", "example": "土曜日（どようび）— Sabtu"}, {"kanji": "山", "reading": "やま / さん", "meaning": "gunung", "example": "山（やま）— gunung"}, {"kanji": "川", "reading": "かわ / せん", "meaning": "sungai", "example": "川（かわ）— sungai"}, {"kanji": "田", "reading": "た / でん", "meaning": "sawah", "example": "田んぼ（たんぼ）— sawah"}, {"kanji": "天", "reading": "てん", "meaning": "langit", "example": "天気（てんき）— cuaca"}, {"kanji": "気", "reading": "き / け", "meaning": "energi / suasana", "example": "元気（げんき）— sehat/bersemangat"}, {"kanji": "雨", "reading": "あめ / う", "meaning": "hujan", "example": "雨（あめ）— hujan"}, {"kanji": "空", "reading": "そら / くう", "meaning": "langit / kosong", "example": "空（そら）— langit"}, {"kanji": "電", "reading": "でん", "meaning": "listrik", "example": "電車（でんしゃ）— kereta listrik"}, {"kanji": "車", "reading": "くるま / しゃ", "meaning": "mobil / kendaraan", "example": "車（くるま）— mobil"}, {"kanji": "駅", "reading": "えき", "meaning": "stasiun", "example": "駅（えき）— stasiun"}, {"kanji": "道", "reading": "みち / どう", "meaning": "jalan", "example": "道（みち）— jalan"}, {"kanji": "門", "reading": "もん / かど", "meaning": "gerbang", "example": "門（もん）— gerbang"}, {"kanji": "家", "reading": "いえ / か", "meaning": "rumah", "example": "家（いえ）— rumah"}, {"kanji": "店", "reading": "みせ / てん", "meaning": "toko", "example": "店（みせ）— toko"}, {"kanji": "国", "reading": "くに / こく", "meaning": "negara", "example": "国（くに）— negara"}, {"kanji": "学", "reading": "がく / まなぶ", "meaning": "belajar", "example": "学生（がくせい）— pelajar"}, {"kanji": "校", "reading": "こう", "meaning": "sekolah", "example": "学校（がっこう）— sekolah"}, {"kanji": "生", "reading": "せい / しょう / いきる", "meaning": "hidup / lahir", "example": "先生（せんせい）— guru"}, {"kanji": "先", "reading": "さき / せん", "meaning": "sebelum / depan", "example": "先生（せんせい）— guru"}, {"kanji": "年", "reading": "とし / ねん", "meaning": "tahun", "example": "今年（ことし）— tahun ini"}, {"kanji": "時", "reading": "とき / じ", "meaning": "waktu / jam", "example": "時間（じかん）— waktu"}, {"kanji": "分", "reading": "ふん / ぶん / わける", "meaning": "menit / bagian", "example": "五分（ごふん）— lima menit"}, {"kanji": "今", "reading": "いま / こん", "meaning": "sekarang", "example": "今（いま）— sekarang"}, {"kanji": "午", "reading": "ご", "meaning": "siang", "example": "午後（ごご）— sore"}, {"kanji": "前", "reading": "まえ / ぜん", "meaning": "depan / sebelum", "example": "名前（なまえ）— nama"}, {"kanji": "後", "reading": "あと / ご / こう", "meaning": "belakang / setelah", "example": "午後（ごご）— sore"}, {"kanji": "毎", "reading": "まい", "meaning": "setiap", "example": "毎日（まいにち）— setiap hari"}, {"kanji": "週", "reading": "しゅう", "meaning": "minggu", "example": "毎週（まいしゅう）— setiap minggu"}, {"kanji": "曜", "reading": "よう", "meaning": "hari dalam minggu", "example": "曜日（ようび）— hari"}, {"kanji": "何", "reading": "なに / なん", "meaning": "apa / berapa", "example": "何ですか（なんですか）— apa?"}, {"kanji": "人", "reading": "ひと / じん / にん", "meaning": "orang", "example": "日本人（にほんじん）— orang Jepang"}, {"kanji": "男", "reading": "おとこ / だん", "meaning": "laki-laki", "example": "男の人（おとこのひと）— laki-laki"}, {"kanji": "女", "reading": "おんな / じょ", "meaning": "perempuan", "example": "女の人（おんなのひと）— perempuan"}, {"kanji": "子", "reading": "こ / し", "meaning": "anak", "example": "子ども（こども）— anak"}, {"kanji": "友", "reading": "とも / ゆう", "meaning": "teman", "example": "友だち（ともだち）— teman"}, {"kanji": "父", "reading": "ちち / ふ", "meaning": "ayah", "example": "父（ちち）— ayah"}, {"kanji": "母", "reading": "はは / ぼ", "meaning": "ibu", "example": "母（はは）— ibu"}, {"kanji": "兄", "reading": "あに / きょう", "meaning": "kakak laki-laki", "example": "兄（あに）— kakak laki-laki"}, {"kanji": "姉", "reading": "あね / し", "meaning": "kakak perempuan", "example": "姉（あね）— kakak perempuan"}, {"kanji": "弟", "reading": "おとうと / てい", "meaning": "adik laki-laki", "example": "弟（おとうと）— adik laki-laki"}, {"kanji": "妹", "reading": "いもうと / まい", "meaning": "adik perempuan", "example": "妹（いもうと）— adik perempuan"}, {"kanji": "目", "reading": "め / もく", "meaning": "mata", "example": "目（め）— mata"}, {"kanji": "耳", "reading": "みみ / じ", "meaning": "telinga", "example": "耳（みみ）— telinga"}, {"kanji": "口", "reading": "くち / こう", "meaning": "mulut", "example": "口（くち）— mulut"}, {"kanji": "手", "reading": "て / しゅ", "meaning": "tangan", "example": "手（て）— tangan"}, {"kanji": "足", "reading": "あし / そく", "meaning": "kaki", "example": "足（あし）— kaki"}, {"kanji": "力", "reading": "ちから / りょく", "meaning": "kekuatan", "example": "力（ちから）— kekuatan"}, {"kanji": "心", "reading": "こころ / しん", "meaning": "hati", "example": "心（こころ）— hati"}, {"kanji": "体", "reading": "からだ / たい", "meaning": "tubuh", "example": "体（からだ）— tubuh"}, {"kanji": "上", "reading": "うえ / じょう", "meaning": "atas", "example": "上（うえ）— atas"}, {"kanji": "下", "reading": "した / か", "meaning": "bawah", "example": "下（した）— bawah"}, {"kanji": "中", "reading": "なか / ちゅう", "meaning": "dalam / tengah", "example": "中（なか）— dalam"}, {"kanji": "外", "reading": "そと / がい", "meaning": "luar", "example": "外（そと）— luar"}, {"kanji": "左", "reading": "ひだり / さ", "meaning": "kiri", "example": "左（ひだり）— kiri"}, {"kanji": "右", "reading": "みぎ / う", "meaning": "kanan", "example": "右（みぎ）— kanan"}, {"kanji": "東", "reading": "ひがし / とう", "meaning": "timur", "example": "東（ひがし）— timur"}, {"kanji": "西", "reading": "にし / せい", "meaning": "barat", "example": "西（にし）— barat"}, {"kanji": "南", "reading": "みなみ / なん", "meaning": "selatan", "example": "南（みなみ）— selatan"}, {"kanji": "北", "reading": "きた / ほく", "meaning": "utara", "example": "北（きた）— utara"}, {"kanji": "大", "reading": "おおきい / だい", "meaning": "besar", "example": "大きい（おおきい）— besar"}, {"kanji": "小", "reading": "ちいさい / しょう", "meaning": "kecil", "example": "小さい（ちいさい）— kecil"}, {"kanji": "新", "reading": "あたらしい / しん", "meaning": "baru", "example": "新しい（あたらしい）— baru"}, {"kanji": "古", "reading": "ふるい / こ", "meaning": "lama / kuno", "example": "古い（ふるい）— lama"}, {"kanji": "長", "reading": "ながい / ちょう", "meaning": "panjang", "example": "長い（ながい）— panjang"}, {"kanji": "高", "reading": "たかい / こう", "meaning": "tinggi / mahal", "example": "高い（たかい）— mahal"}, {"kanji": "安", "reading": "やすい / あん", "meaning": "murah / aman", "example": "安い（やすい）— murah"}, {"kanji": "白", "reading": "しろい / はく", "meaning": "putih", "example": "白い（しろい）— putih"}, {"kanji": "黒", "reading": "くろい / こく", "meaning": "hitam", "example": "黒い（くろい）— hitam"}, {"kanji": "赤", "reading": "あかい / せき", "meaning": "merah", "example": "赤い（あかい）— merah"}, {"kanji": "青", "reading": "あおい / せい", "meaning": "biru", "example": "青い（あおい）— biru"}, {"kanji": "本", "reading": "ほん / もと", "meaning": "buku / asal", "example": "本（ほん）— buku"}, {"kanji": "文", "reading": "ぶん / もん", "meaning": "kalimat / tulisan", "example": "作文（さくぶん）— karangan"}, {"kanji": "字", "reading": "じ / あざ", "meaning": "huruf", "example": "漢字（かんじ）— kanji"}, {"kanji": "名", "reading": "な / めい", "meaning": "nama", "example": "名前（なまえ）— nama"}, {"kanji": "語", "reading": "ご / かたる", "meaning": "bahasa / kata", "example": "日本語（にほんご）— bahasa Jepang"}, {"kanji": "話", "reading": "はなす / わ", "meaning": "berbicara", "example": "話す（はなす）— berbicara"}, {"kanji": "読", "reading": "よむ / どく", "meaning": "membaca", "example": "読む（よむ）— membaca"}, {"kanji": "書", "reading": "かく / しょ", "meaning": "menulis", "example": "書く（かく）— menulis"}, {"kanji": "見", "reading": "みる / けん", "meaning": "melihat", "example": "見る（みる）— melihat"}, {"kanji": "聞", "reading": "きく / ぶん", "meaning": "mendengar / bertanya", "example": "聞く（きく）— mendengar"}, {"kanji": "行", "reading": "いく / こう", "meaning": "pergi", "example": "行く（いく）— pergi"}, {"kanji": "来", "reading": "くる / らい", "meaning": "datang", "example": "来る（くる）— datang"}, {"kanji": "帰", "reading": "かえる / き", "meaning": "pulang", "example": "帰る（かえる）— pulang"}, {"kanji": "食", "reading": "たべる / しょく", "meaning": "makan", "example": "食べる（たべる）— makan"}, {"kanji": "飲", "reading": "のむ / いん", "meaning": "minum", "example": "飲む（のむ）— minum"}, {"kanji": "買", "reading": "かう / ばい", "meaning": "membeli", "example": "買う（かう）— membeli"}, {"kanji": "売", "reading": "うる / ばい", "meaning": "menjual", "example": "売る（うる）— menjual"}, {"kanji": "休", "reading": "やすむ / きゅう", "meaning": "istirahat", "example": "休む（やすむ）— istirahat"}, {"kanji": "会", "reading": "あう / かい", "meaning": "bertemu", "example": "会う（あう）— bertemu"}, {"kanji": "社", "reading": "しゃ", "meaning": "perusahaan", "example": "会社（かいしゃ）— perusahaan"}, {"kanji": "病", "reading": "びょう", "meaning": "sakit", "example": "病院（びょういん）— rumah sakit"}, {"kanji": "院", "reading": "いん", "meaning": "institusi", "example": "病院（びょういん）— rumah sakit"}, {"kanji": "医", "reading": "い / いしゃ", "meaning": "dokter / medis", "example": "医者（いしゃ）— dokter"}, {"kanji": "物", "reading": "もの / ぶつ", "meaning": "benda", "example": "物（もの）— benda"}, {"kanji": "魚", "reading": "さかな / ぎょ", "meaning": "ikan", "example": "魚（さかな）— ikan"}, {"kanji": "鳥", "reading": "とり / ちょう", "meaning": "burung", "example": "鳥（とり）— burung"}, {"kanji": "花", "reading": "はな / か", "meaning": "bunga", "example": "花（はな）— bunga"}, {"kanji": "犬", "reading": "いぬ / けん", "meaning": "anjing", "example": "犬（いぬ）— anjing"}, {"kanji": "猫", "reading": "ねこ", "meaning": "kucing", "example": "猫（ねこ）— kucing"}];
+
+const XP_PER_KANJI = 10;
+const DAILY_COUNT = 5;
+const TOTAL = KANJI.length;
+
+const todayKey = () => new Date().toLocaleDateString("en-CA");
+function dateDiff(a,b){
+  const A=new Date(a+"T00:00:00"), B=new Date(b+"T00:00:00");
+  return Math.round((B-A)/86400000);
+}
+function getState(){
+  let s=JSON.parse(localStorage.getItem("kitsumiKanjiState")||"null");
+  if(!s){
+    s={startDate:todayKey(), completed:{}, streak:parseInt(localStorage.getItem("kitsumiStreak")||"0"), lastCompleted:null};
+    localStorage.setItem("kitsumiKanjiState",JSON.stringify(s));
+  }
+  return s;
+}
+let state=getState();
+let dayIndex=Math.max(0,dateDiff(state.startDate,todayKey()));
+let start=dayIndex*DAILY_COUNT;
+let current=0;
+let todayDone=0;
+
+function save(){localStorage.setItem("kitsumiKanjiState",JSON.stringify(state));}
+function updateXP(){document.getElementById("xpMini").textContent=localStorage.getItem("kitsumiXP")||"0";}
+function addXP(n){
+  const xp=parseInt(localStorage.getItem("kitsumiXP")||"0")+n;
+  localStorage.setItem("kitsumiXP",String(xp));
+  updateXP();
+}
+function todayCompleted(i){return !!state.completed[todayKey()+"_"+i];}
+function init(){
+  updateXP();
+  if(start>=TOTAL){showFinished();return;}
+  document.getElementById("dayTitle").textContent="Hari "+(dayIndex+1)+" / 24";
+  todayDone=0;
+  for(let i=0;i<DAILY_COUNT;i++) if(todayCompleted(start+i)) todayDone++;
+  document.getElementById("progressText").textContent=todayDone+" / 5 hari ini";
+  document.getElementById("overallText").textContent=(start+todayDone)+" / 120 total";
+  document.getElementById("progressBar").style.width=(todayDone/5*100)+"%";
+  if(todayDone>=5){finishDayUI();return;}
+  while(current<5 && todayCompleted(start+current)) current++;
+  showKanji();
+}
+function showKanji(){
+  if(current>=5){finishDayUI();return;}
+  const item=KANJI[start+current];
+  document.getElementById("kanjiNumber").textContent="Kanji "+(start+current+1)+" dari "+TOTAL;
+  document.getElementById("kanji").textContent=item.kanji;
+  document.getElementById("reading").textContent=item.reading;
+  document.getElementById("meaning").textContent=item.meaning;
+  document.getElementById("example").textContent=item.example;
+  document.getElementById("status").textContent="";
+  clearCanvas();
+  loadStrokeAnimation(item.kanji);
+}
+async function loadStrokeAnimation(char){
+  const svg=document.getElementById("strokeSvg");
+  svg.innerHTML='<text x="100" y="130" text-anchor="middle" font-size="120" fill="#dce7f3">'+char+'</text>';
+  try{
+    const code=char.codePointAt(0).toString(16).padStart(5,"0");
+    const url="https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji/"+code+".svg";
+    const res=await fetch(url);
+    if(!res.ok) throw new Error();
+    const text=await res.text();
+    const doc=new DOMParser().parseFromString(text,"image/svg+xml");
+    const paths=[...doc.querySelectorAll("path")].filter(p=>p.getAttribute("d"));
+    svg.innerHTML="";
+    paths.forEach((p,i)=>{
+      const np=document.createElementNS("http://www.w3.org/2000/svg","path");
+      np.setAttribute("d",p.getAttribute("d"));
+      np.setAttribute("class","stroke-path stroke-fade");
+      np.dataset.i=i;
+      svg.appendChild(np);
+    });
+    animateStrokes();
+  }catch(e){
+    svg.innerHTML='<text x="100" y="130" text-anchor="middle" font-size="120" fill="#12396b">'+char+'</text>';
+  }
+}
+function animateStrokes(){
+  const paths=[...document.querySelectorAll("#strokeSvg .stroke-path")];
+  if(!paths.length)return;
+  paths.forEach(p=>{p.classList.add("stroke-fade");p.style.strokeDasharray="1000";p.style.strokeDashoffset="1000"});
+  paths.forEach((p,i)=>{
+    setTimeout(()=>{
+      p.classList.remove("stroke-fade");
+      p.style.transition="stroke-dashoffset .55s ease";
+      p.style.strokeDashoffset="0";
+    },i*650);
+  });
+}
+
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+let drawing=false, hasInk=false;
+function resizeCanvas(){
+  const rect=canvas.getBoundingClientRect(), dpr=window.devicePixelRatio||1;
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineWidth=5;ctx.lineCap="round";ctx.lineJoin="round";ctx.strokeStyle="#12396b";
+}
+window.addEventListener("resize",resizeCanvas);resizeCanvas();
+function point(e){
+  const r=canvas.getBoundingClientRect();
+  return {x:(e.clientX-r.left),y:(e.clientY-r.top)};
+}
+canvas.addEventListener("pointerdown",e=>{drawing=true;hasInk=true;canvas.setPointerCapture(e.pointerId);const p=point(e);ctx.beginPath();ctx.moveTo(p.x,p.y);document.getElementById("doneBtn").disabled=false;});
+canvas.addEventListener("pointermove",e=>{if(!drawing)return;const p=point(e);ctx.lineTo(p.x,p.y);ctx.stroke();});
+canvas.addEventListener("pointerup",()=>drawing=false);
+canvas.addEventListener("pointercancel",()=>drawing=false);
+function clearCanvas(){ctx.clearRect(0,0,canvas.clientWidth,canvas.clientHeight);hasInk=false;document.getElementById("doneBtn").disabled=true;}
+function completeKanji(){
+  if(!hasInk)return;
+  const key=todayKey()+"_"+(start+current);
+  if(state.completed[key])return;
+  state.completed[key]=true;todayDone++;
+  addXP(XP_PER_KANJI);
+  save();
+  document.getElementById("progressText").textContent=todayDone+" / 5 hari ini";
+  document.getElementById("overallText").textContent=(start+todayDone)+" / 120 total";
+  document.getElementById("progressBar").style.width=(todayDone/5*100)+"%";
+  if(todayDone>=5){
+    completeStreak();
+    playTaskCompleteSound();
+    finishDayUI();
+    return;
+  }
+  document.getElementById("status").textContent="✓ Mantap! +10 XP";
+  current++;
+  setTimeout(showKanji,500);
+}
+function playTaskCompleteSound(){
+  // Suara kemenangan sederhana tanpa file audio tambahan.
+  // Memakai suara Jepang yang tersedia di perangkat/browser.
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(
+      "素晴らしい！今日の漢字学習が終わったよ！"
+    );
+    utterance.lang = "ja-JP";
+    utterance.rate = 0.95;
+    utterance.pitch = 1.25;
+    utterance.volume = 1;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function completeStreak(){
+  const today=todayKey(), last=state.lastCompleted;
+  if(last!==today){
+    if(last && dateDiff(last,today)===1) state.streak=(parseInt(state.streak)||0)+1;
+    else state.streak=1;
+    state.lastCompleted=today;
+    localStorage.setItem("kitsumiStreak",String(state.streak));
+    save();
+  }
+}
+function finishDayUI(){
+  document.getElementById("lessonCard").style.display="none";
+  document.getElementById("dayComplete").style.display="block";
+}
+function showFinished(){
+  document.getElementById("dayTitle").textContent="120 Kanji selesai!";
+  document.getElementById("progressText").textContent="5 / 5 hari ini";
+  document.getElementById("overallText").textContent="120 / 120 total";
+  document.getElementById("progressBar").style.width="100%";
+  document.getElementById("lessonCard").style.display="none";
+  document.getElementById("dayComplete").style.display="block";
+  document.querySelector("#dayComplete h2").textContent="🎊 Semua kanji selesai!";
+  document.querySelector("#dayComplete p").innerHTML="Kamu sudah menyelesaikan seluruh 120 kanji Kitsumi.";
+  document.querySelector(".reward").textContent="⭐ 120 Kanji berhasil dipelajari";
+}
+init();
+</script>
+</body>
+</html>
