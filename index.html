@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kitsumi — Belajar Bahasa Jepang</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    :root {
+      --navy: #12396b;
+      --blue: #2f7ff0;
+      --blue-light: #eef6ff;
+      --muted: #91a0b3;
+      --pink: #e95775;
+      --green: #16b86a;
+      --purple: #7d45ed;
+      --yellow: #ffd52f;
+      --bg: #f8fbff;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--navy);
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      height: 82px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+
+    .logo {
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -2px;
+      color: var(--navy);
+    }
+
+    .logo .pink {
+      color: var(--pink);
+    }
+
+    .bell {
+      border: 0;
+      background: transparent;
+      font-size: 36px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* MAIN */
+    main {
+      padding: 16px 28px 92px;
+    }
+
+    /* WELCOME */
+    .welcome {
+      min-height: 124px;
+      border-radius: 28px;
+      background: linear-gradient(105deg, #f3f9ff 0%, #e9f4ff 100%);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      padding: 16px 24px 16px 30px;
+      margin-bottom: 14px;
+    }
+
+    .welcome-text h1 {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -1px;
+    }
+
+    .welcome-text p {
+      color: #7289a4;
+      font-size: 19px;
+    }
+
+    .kitsu {
+      width: 165px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 88px;
+      filter: drop-shadow(0 5px 4px rgba(0,0,0,.08));
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      height: 98px;
+      background: white;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 14px 22px;
+      box-shadow: 0 8px 22px rgba(30, 70, 120, .07);
+    }
+
+    .stat-icon {
+      font-size: 46px;
+      width: 72px;
+      text-align: center;
+      margin-right: 12px;
+    }
+
+    .stat-label {
+      color: #95a2b2;
+      font-size: 19px;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      color: var(--navy);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    /* START */
+    .start-btn {
+      width: 100%;
+      height: 74px;
+      border: 0;
+      border-radius: 27px;
+      background: var(--blue);
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 12px 25px rgba(47, 127, 240, .25);
+      margin-bottom: 20px;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .start-btn:active {
+      transform: scale(.98);
+    }
+
+    /* MATERIAL */
+    .section-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .materials {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .material {
+      text-decoration: none;
+      color: var(--navy);
+      background: white;
+      min-height: 180px;
+      border-radius: 25px;
+      padding: 16px 8px 12px;
+      text-align: center;
+      box-shadow: 0 7px 20px rgba(30, 70, 120, .07);
+      transition: transform .15s;
+    }
+
+    .material:active {
+      transform: scale(.97);
+    }
+
+    .material-icon {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 9px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 47px;
+    }
+
+    .green {
+      background: #ddfaed;
+    }
+
+    .blue {
+      background: #e4f0ff;
+    }
+
+    .purple {
+      background: #f0e7ff;
+    }
+
+    .material h3 {
+      font-size: 22px;
+      margin-bottom: 5px;
+    }
+
+    .material p {
+      color: #a0a9b5;
+      font-size: 14px;
+      line-height: 1.2;
+    }
+
+    /* QUOTE */
+    .quote {
+      min-height: 120px;
+      border-radius: 27px;
+      background: linear-gradient(105deg, #edf7ff, #e5f2ff);
+      display: flex;
+      align-items: center;
+      padding: 14px 20px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .quote-kitsu {
+      width: 120px;
+      font-size: 68px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .quote-text {
+      font-size: 21px;
+      line-height: 1.35;
+    }
+
+    .quote-author {
+      color: #7187a1;
+      font-size: 19px;
+      margin-top: 6px;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: min(620px, 100%);
+      height: 82px;
+      background: rgba(255,255,255,.98);
+      border-top: 1px solid #edf0f5;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      z-index: 100;
+      box-shadow: 0 -7px 20px rgba(20, 50, 90, .06);
+    }
+
+    .nav-item {
+      text-decoration: none;
+      color: #a1acba;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      font-size: 34px;
+      line-height: 1;
+    }
+
+    .nav-active {
+      color: var(--blue);
+    }
+
+    /* MOBILE */
+    @media (max-width: 500px) {
+      .app {
+        max-width: 100%;
+      }
+
+      header {
+        height: 80px;
+        padding: 0 24px;
+      }
+
+      .logo {
+        font-size: 40px;
+      }
+
+      .bell {
+        font-size: 31px;
+      }
+
+      main {
+        padding: 16px 24px 88px;
+      }
+
+      .welcome {
+        min-height: 124px;
+        padding: 16px 16px 16px 24px;
+        border-radius: 27px;
+      }
+
+      .welcome-text h1 {
+        font-size: 27px;
+      }
+
+      .welcome-text p {
+        font-size: 17px;
+      }
+
+      .kitsu {
+        width: 125px;
+        font-size: 70px;
+      }
+
+      .stat {
+        height: 96px;
+        padding: 14px 17px;
+      }
+
+      .stat-icon {
+        font-size: 39px;
+        width: 53px;
+        margin-right: 6px;
+      }
+
+      .stat-label {
+        font-size: 17px;
+      }
+
+      .stat-value {
+        font-size: 24px;
+      }
+
+      .start-btn {
+        height: 72px;
+        font-size: 26px;
+        border-radius: 25px;
+      }
+
+      .section-title {
+        font-size: 27px;
+      }
+
+      .materials {
+        gap: 10px;
+      }
+
+      .material {
+        min-height: 175px;
+        border-radius: 22px;
+        padding: 14px 5px;
+      }
+
+      .material-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 39px;
+        border-radius: 20px;
+      }
+
+      .material h3 {
+        font-size: 19px;
+      }
+
+      .material p {
+        font-size: 13px;
+      }
+
+      .quote {
+        min-height: 118px;
+        padding: 12px;
+      }
+
+      .quote-kitsu {
+        width: 90px;
+        font-size: 54px;
+      }
+
+      .quote-text {
+        font-size: 17px;
+      }
+
+      .quote-author {
+        font-size: 14px;
+      }
+
+      .bottom-nav {
+        height: 72px;
+      }
+
+      .nav-icon {
+        font-size: 27px;
+      }
+
+      .nav-item {
+        font-size: 13px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      main {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      .welcome-text h1 {
+        font-size: 25px;
+      }
+
+      .welcome-text p {
+        font-size: 16px;
+      }
+
+      .kitsu {
+        font-size: 67px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+      }
+
+      .stat-value {
+        font-size: 23px;
+      }
+
+      .material h3 {
+        font-size: 17px;
+      }
+
+      .material p {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header>
+      <div class="logo">
+        Kits<span class="pink">u</span>mi
+      </div>
+
+      <button class="bell" aria-label="Notifikasi">
+        🔔
+      </button>
+    </header>
+
+    <main>
+
+      <!-- WELCOME -->
+      <section class="welcome">
+        <div class="welcome-text">
+          <h1>こんにちは!</h1>
+          <p>Selamat datang kembali!</p>
+        </div>
+
+        <!-- Ganti emoji ini dengan images/kitsu.png jika aset Kitsu sudah tersedia -->
+        <div class="kitsu">🦊</div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats">
+
+        <div class="stat">
+          <div class="stat-icon">🔥</div>
+          <div>
+            <div class="stat-label">Streak</div>
+            <div class="stat-value"><span id="streak">2</span> hari</div>
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-icon">⭐</div>
+          <div>
+            <div class="stat-label">XP</div>
+            <div class="stat-value" id="xp">120</div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- START -->
+      <button class="start-btn" onclick="mulaiBelajar()">
+        ▶&nbsp; Mulai Belajar
+      </button>
+
+      <!-- MATERIAL -->
+      <h2 class="section-title">Pilih Materi</h2>
+
+      <section class="materials">
+
+        <a class="material" href="kosakata.html">
+          <div class="material-icon green">📖</div>
+          <h3>Kotoba</h3>
+          <p>Kosakata</p>
+        </a>
+
+        <a class="material" href="kanji.html">
+          <div class="material-icon blue">漢</div>
+          <h3>Kanji</h3>
+          <p>Huruf Jepang</p>
+        </a>
+
+        <a class="material" href="latihan.html">
+          <div class="material-icon purple">✎</div>
+          <h3>Latihan</h3>
+          <p>Uji Pemahaman</p>
+        </a>
+
+      </section>
+
+      <!-- QUOTE -->
+      <section class="quote">
+        <div class="quote-kitsu">🦊</div>
+
+        <div class="quote-text">
+          <div>"Bahasa baru,</div>
+          <div>dunia baru untukmu."</div>
+          <div class="quote-author">— Kitsu —</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+
+    <a href="index.html" class="nav-item nav-active">
+      <span class="nav-icon">🏠</span>
+      <span>Beranda</span>
+    </a>
+
+    <a href="materi.html" class="nav-item">
+      <span class="nav-icon">📖</span>
+      <span>Materi</span>
+    </a>
+
+    <a href="profil.html" class="nav-item">
+      <span class="nav-icon">♙</span>
+      <span>Profil</span>
+    </a>
+
+  </nav>
+
+  <script>
+    function mulaiBelajar() {
+      window.location.href = "kosakata.html";
+    }
+
+    // Data awal. Nanti bisa kita hubungkan dengan sistem XP/Streak asli.
+    const savedXP = localStorage.getItem("kitsumiXP");
+    const savedStreak = localStorage.getItem("kitsumiStreak");
+
+    if (savedXP !== null) {
+      document.getElementById("xp").textContent = savedXP;
+    }
+
+    if (savedStreak !== null) {
+      document.getElementById("streak").textContent = savedStreak;
+    }
+  </script>
+
+</body>
+</html>
